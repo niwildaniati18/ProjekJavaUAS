@@ -23,6 +23,34 @@ public class PenjualanViewFrame extends JFrame{
     private JTable viewTable;
 
     public PenjualanViewFrame(){
+        cariButton.addActionListener(e -> {
+            if (cariTextField.getText().equals("")) {
+                JOptionPane.showMessageDialog(null,
+                        "Isi kata kunci pencarian",
+                        "Validasi kata kunci kosong",
+                        JOptionPane.WARNING_MESSAGE);
+                cariTextField.requestFocus();
+                return;
+            }
+            Connection c = Koneksi.getConnection();
+            String keyword = "%" + cariTextField.getText() + "%";
+            String searchSQL = "SELECT * FROM alamat WHERE nama like ?";
+            try {
+                PreparedStatement ps = c.prepareStatement(searchSQL);
+                ps.setString(1, keyword);
+                ResultSet rs = ps.executeQuery();
+                DefaultTableModel dtm = (DefaultTableModel) viewTable.getModel();
+                dtm.setRowCount(0);
+                Object[] row = new Object[2];
+                while (rs.next()) {
+                    row[0] = rs.getInt("id");
+                    row[1] = rs.getString("nama");
+                    dtm.addRow(row);
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         ubahButton.addActionListener(e -> {
             int barisTerpilih = viewTable.getSelectedRow();
             if (barisTerpilih < 0){
@@ -69,6 +97,14 @@ public class PenjualanViewFrame extends JFrame{
             }
         });
         cariButton.addActionListener(e -> {
+            if (cariTextField.getText().equals("")) {
+                JOptionPane.showMessageDialog(null,
+                        "Isi kata kunci pencarian",
+                        "Validasi kata kunci kosong",
+                        JOptionPane.WARNING_MESSAGE);
+                cariTextField.requestFocus();
+                return;
+            }
             Connection c = Koneksi.getConnection();
             String keyword = "%" + cariTextField.getText() + "%";
             String searchSQL = "SELECT * FROM buku WHERE judul_buku like ?";

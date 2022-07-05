@@ -24,15 +24,34 @@ public class PenjualanInputFrame extends JFrame{
     public PenjualanInputFrame(){
         simpanButton.addActionListener(e -> {
             String judul = judulTextField.getText();
+            if (judul.equals("")) {
+                JOptionPane.showMessageDialog(null,
+                        "Isi kata kunci pencarian",
+                        "Validasi kata kunci kosong",
+                        JOptionPane.WARNING_MESSAGE);
+                judulTextField.requestFocus();
+                return;
+            }
             Connection c = Koneksi.getConnection();
             PreparedStatement ps;
             try {
                 if (id == 0) {
-                    String insertSQL = "INSERT INTO buku VALUES (NULL, ?)";
-                    ps = c.prepareStatement(insertSQL);
+                    String cekSQL = "SELECT * FROM buku WHERE judul_buku = ? AND id != ?";
+                    ps = c.prepareStatement(cekSQL);
                     ps.setString(1, judul);
-                    ps.executeUpdate();
-                    dispose();
+                    ps.setInt(2, id);
+                    ResultSet rs = ps.executeQuery();
+                    if (rs.next()) {
+                        JOptionPane.showMessageDialog(null,
+                                "Data yang anda masukkan suda ada");
+                    } else {
+                        String insertSQL = "INSERT INTO buku VALUES (NULL, ?)";
+                        ps = c.prepareStatement(insertSQL);
+                        ps.setString(1, judul);
+                        ps.setInt(2, id);
+                        ps.executeUpdate();
+                        dispose();
+                    }
                 } else {
                     String updateSQL = "UPDATE buku SET judul_buku = ? WHERE id = ?";
                     ps = c.prepareStatement(updateSQL);

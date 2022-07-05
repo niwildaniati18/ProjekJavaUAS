@@ -23,6 +23,21 @@ public class PenjualanViewFrame extends JFrame{
     private JTable viewTable;
 
     public PenjualanViewFrame(){
+        ubahButton.addActionListener(e -> {
+            int barisTerpilih = viewTable.getSelectedRow();
+            if (barisTerpilih < 0){
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Pilih Data Dulu...");
+                return;
+            }
+            TableModel tm = viewTable.getModel();
+            int id = Integer.parseInt(tm.getValueAt(barisTerpilih,0).toString());
+            PenjualanInputFrame inputFrame = new PenjualanInputFrame();
+            inputFrame.setId(id);
+            inputFrame.isiKomponen();
+            inputFrame.setVisible(true);
+        });
         tambahButton.addActionListener(e -> {
             PenjualanInputFrame inputFrame = new PenjualanInputFrame();
             inputFrame.setVisible(true);

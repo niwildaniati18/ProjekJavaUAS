@@ -23,6 +23,10 @@ public class PenjualanViewFrame extends JFrame{
     private JTable viewTable;
 
     public PenjualanViewFrame(){
+        tambahButton.addActionListener(e -> {
+            PenjualanInputFrame inputFrame = new PenjualanInputFrame();
+            inputFrame.setVisible(true);
+        });
         hapusButton.addActionListener(e -> {
             int barisTerpilih = viewTable.getSelectedRow();
             if (barisTerpilih < 0){

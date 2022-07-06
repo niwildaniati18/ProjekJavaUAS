@@ -1,10 +1,12 @@
-import frame.PenjualanViewFrame;
-import helpers.Koneksi;
+import frame.BukuViewFrame;
+import frame.PinjambukuViewFrame;
+//import helpers.Koneksi;
 
 public class Main {
     public static void main(String[] args) {
 //        Koneksi.getConnection();
-        PenjualanViewFrame viewFrame = new PenjualanViewFrame();
+//        BukuViewFrame viewFrame = new BukuViewFrame();
+        PinjambukuViewFrame viewFrame = new PinjambukuViewFrame();
         viewFrame.setVisible(true);
     }
 }

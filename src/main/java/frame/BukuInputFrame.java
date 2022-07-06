@@ -1,19 +1,18 @@
 package frame;
 
+import helpers.ComboBoxItem;
 import helpers.Koneksi;
 
 import javax.swing.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
-public class PenjualanInputFrame extends JFrame{
+public class BukuInputFrame extends JFrame{
     private JPanel mainPanel;
     private JTextField idTextField;
-    private JTextField judulTextField;
+    private JTextField namaTextField;
     private JButton simpanButton;
     private JButton batalButton;
+    private JPanel buttonPanel;
 
     private int id;
 
@@ -21,24 +20,24 @@ public class PenjualanInputFrame extends JFrame{
         this.id = id;
     }
 
-    public PenjualanInputFrame(){
+    public BukuInputFrame(){
         simpanButton.addActionListener(e -> {
-            String judul = judulTextField.getText();
-            if (judul.equals("")) {
+            String nama = namaTextField.getText();
+            if (nama.equals("")) {
                 JOptionPane.showMessageDialog(null,
-                        "Isi kata kunci pencarian",
+                        "Isi Nama Peminjam",
                         "Validasi kata kunci kosong",
                         JOptionPane.WARNING_MESSAGE);
-                judulTextField.requestFocus();
+                namaTextField.requestFocus();
                 return;
             }
             Connection c = Koneksi.getConnection();
             PreparedStatement ps;
             try {
                 if (id == 0) {
-                    String cekSQL = "SELECT * FROM buku WHERE judul_buku = ? AND id != ?";
+                    String cekSQL = "SELECT * FROM buku WHERE nama = ? AND id != ?";
                     ps = c.prepareStatement(cekSQL);
-                    ps.setString(1, judul);
+                    ps.setString(1, nama);
                     ps.setInt(2, id);
                     ResultSet rs = ps.executeQuery();
                     if (rs.next()) {
@@ -47,15 +46,14 @@ public class PenjualanInputFrame extends JFrame{
                     } else {
                         String insertSQL = "INSERT INTO buku VALUES (NULL, ?)";
                         ps = c.prepareStatement(insertSQL);
-                        ps.setString(1, judul);
-                        ps.setInt(2, id);
+                        ps.setString(1, nama);
                         ps.executeUpdate();
                         dispose();
                     }
                 } else {
-                    String updateSQL = "UPDATE buku SET judul_buku = ? WHERE id = ?";
+                    String updateSQL = "UPDATE buku SET nama = ? WHERE id = ?";
                     ps = c.prepareStatement(updateSQL);
-                    ps.setString(1, judul);
+                    ps.setString(1, nama);
                     ps.setInt(2, id);
                     ps.executeUpdate();
                     dispose();
@@ -72,7 +70,7 @@ public class PenjualanInputFrame extends JFrame{
 
     public void init(){
         setContentPane(mainPanel);
-        setTitle("Input buku");
+        setTitle("Input Buku");
         pack();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -88,7 +86,7 @@ public class PenjualanInputFrame extends JFrame{
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 idTextField.setText(String.valueOf(rs.getInt("id")));
-                judulTextField.setText(rs.getString("judul_buku"));
+                namaTextField.setText(rs.getString("nama"));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -9,20 +9,22 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
 
-public class PenjualanViewFrame extends JFrame{
+public class BukuViewFrame extends JFrame{
     private JPanel mainPanel;
     private JTextField cariTextField;
     private JButton cariButton;
-    private JScrollPane viewScrollPane;
+    private JTable viewTable;
     private JButton tambahButton;
     private JButton ubahButton;
-    private JButton batalButton;
     private JButton hapusButton;
-    private JButton batalButton1;
+    private JButton batalButton;
+    private JButton cetakButton;
     private JButton tutupButton;
-    private JTable viewTable;
+    private JPanel buttonPanel;
+    private JPanel cariPanel;
+    private JScrollPane viewScrollPane;
 
-    public PenjualanViewFrame(){
+    public BukuViewFrame(){
         cariButton.addActionListener(e -> {
             if (cariTextField.getText().equals("")) {
                 JOptionPane.showMessageDialog(null,
@@ -34,7 +36,7 @@ public class PenjualanViewFrame extends JFrame{
             }
             Connection c = Koneksi.getConnection();
             String keyword = "%" + cariTextField.getText() + "%";
-            String searchSQL = "SELECT * FROM alamat WHERE nama like ?";
+            String searchSQL = "SELECT * FROM buku WHERE nama like ?";
             try {
                 PreparedStatement ps = c.prepareStatement(searchSQL);
                 ps.setString(1, keyword);
@@ -61,13 +63,13 @@ public class PenjualanViewFrame extends JFrame{
             }
             TableModel tm = viewTable.getModel();
             int id = Integer.parseInt(tm.getValueAt(barisTerpilih,0).toString());
-            PenjualanInputFrame inputFrame = new PenjualanInputFrame();
+            BukuInputFrame inputFrame = new BukuInputFrame();
             inputFrame.setId(id);
             inputFrame.isiKomponen();
             inputFrame.setVisible(true);
         });
         tambahButton.addActionListener(e -> {
-            PenjualanInputFrame inputFrame = new PenjualanInputFrame();
+            BukuInputFrame inputFrame = new BukuInputFrame();
             inputFrame.setVisible(true);
         });
         hapusButton.addActionListener(e -> {
@@ -96,34 +98,6 @@ public class PenjualanViewFrame extends JFrame{
                 }
             }
         });
-        cariButton.addActionListener(e -> {
-            if (cariTextField.getText().equals("")) {
-                JOptionPane.showMessageDialog(null,
-                        "Isi kata kunci pencarian",
-                        "Validasi kata kunci kosong",
-                        JOptionPane.WARNING_MESSAGE);
-                cariTextField.requestFocus();
-                return;
-            }
-            Connection c = Koneksi.getConnection();
-            String keyword = "%" + cariTextField.getText() + "%";
-            String searchSQL = "SELECT * FROM buku WHERE judul_buku like ?";
-            try {
-                PreparedStatement ps = c.prepareStatement(searchSQL);
-                ps.setString(1, keyword);
-                ResultSet rs = ps.executeQuery();
-                DefaultTableModel dtm = (DefaultTableModel) viewTable.getModel();
-                dtm.setRowCount(0);
-                Object[] row = new Object[2];
-                while (rs.next()) {
-                    row[0] = rs.getInt("id");
-                    row[1] = rs.getString("judul_buku");
-                    dtm.addRow(row);
-                }
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
         tutupButton.addActionListener(e -> {
             dispose();
         });
@@ -141,7 +115,7 @@ public class PenjualanViewFrame extends JFrame{
     }
     public void init(){
         setContentPane(mainPanel);
-        setTitle("Data buku");
+        setTitle("Data Buku");
         pack();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -153,13 +127,13 @@ public class PenjualanViewFrame extends JFrame{
         try {
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery(selectSQL);
-            String header[] = {"Id","Judul buku"};
+            String header[] = {"Id","nama"};
             DefaultTableModel dtm = new DefaultTableModel(header, 0);
             viewTable.setModel(dtm);
             Object[] row = new Object[2];
             while (rs.next()) {
                 row[0] = rs.getInt("id");
-                row[1] = rs.getString("judul_buku");
+                row[1] = rs.getString("nama");
                 dtm.addRow(row);
             }
         } catch (SQLException e) {

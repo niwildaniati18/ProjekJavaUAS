@@ -1,5 +1,7 @@
 package frame;
 
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
 import helpers.ComboBoxItem;
 import helpers.Koneksi;
 
@@ -15,6 +17,8 @@ public class PinjambukuInputFrame extends JFrame{
     private JButton batalButton;
     private JRadioButton romanceRadioButton;
     private JRadioButton comedyRadioButton;
+    private JTextField emailTextField;
+    private DatePicker tanggalPinjamDataPicker;
 
     private ButtonGroup jenisBukuButtonGroup;
 
@@ -59,6 +63,26 @@ public class PinjambukuInputFrame extends JFrame{
                 return;
             }
 
+            String email = emailTextField.getText();
+            if (!email.contains("@") || !email.contains(".")) {
+                JOptionPane.showMessageDialog(null,
+                        "Isi dengan Email Valid",
+                        "Validasi Email",
+                        JOptionPane.WARNING_MESSAGE);
+                emailTextField.requestFocus();
+                return;
+            }
+
+            String tanggalPinjam = tanggalPinjamDataPicker.getText();
+            if (tanggalPinjam.equals("")){
+                JOptionPane.showMessageDialog(null,
+                        "Isi Tanggal Pinjam",
+                        "Validasi Data Kosong",
+                        JOptionPane.WARNING_MESSAGE);
+                tanggalPinjamDataPicker.requestFocus();
+                return;
+            }
+
             Connection c = Koneksi.getConnection();
             PreparedStatement ps;
             try {
@@ -72,22 +96,27 @@ public class PinjambukuInputFrame extends JFrame{
                         JOptionPane.showMessageDialog(null,
                                 "Data yang anda masukkan suda ada");
                     } else {
-                        String insertSQL = "INSERT INTO pinjambuku (id, nama, buku_id, jenis_buku) VALUES " +
-                                "(NULL, ?, ?, ?)";
+                        String insertSQL = "INSERT INTO pinjambuku (id, nama, buku_id, jenis_buku, email, " +
+                                "tanggalpinjam) VALUES (NULL, ?, ?, ?, ?, ?)";
                         ps = c.prepareStatement(insertSQL);
                         ps.setString(1, nama);
                         ps.setInt(2, bukuId);
                         ps.setString(3, jenisBuku);
+                        ps.setString(4, email);
+                        ps.setString(5, tanggalPinjam);
                         ps.executeUpdate();
                         dispose();
                     }
                 } else {
-                    String updateSQL = "UPDATE pinjambuku SET nama = ?, buku_id = ?, jenis_buku = ? WHERE id = ?";
+                    String updateSQL = "UPDATE pinjambuku SET nama = ?, buku_id = ?, jenis_buku = ?, email = ?,  " +
+                            "tanggalpinjam = ? WHERE id = ?";
                     ps = c.prepareStatement(updateSQL);
                     ps.setString(1, nama);
                     ps.setInt(2, bukuId);
                     ps.setString(3, jenisBuku);
-                    ps.setInt(4, id);
+                    ps.setString(4, email);
+                    ps.setString(5, tanggalPinjam);
+                    ps.setInt(6, id);
                     ps.executeUpdate();
                     dispose();
                 }
@@ -137,6 +166,8 @@ public class PinjambukuInputFrame extends JFrame{
                         comedyRadioButton.setSelected(true);
                     }
                 }
+                emailTextField.setText(rs.getString("email"));
+                tanggalPinjamDataPicker.setText(rs.getString("tanggalpinjam"));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -161,5 +192,9 @@ public class PinjambukuInputFrame extends JFrame{
         jenisBukuButtonGroup = new ButtonGroup();
         jenisBukuButtonGroup.add(romanceRadioButton);
         jenisBukuButtonGroup.add(comedyRadioButton);
+
+        DatePickerSettings dps = new DatePickerSettings();
+        dps.setFormatForDatesCommonEra("yyyy-MM-dd");
+        tanggalPinjamDataPicker.setSettings(dps);
     }
 }

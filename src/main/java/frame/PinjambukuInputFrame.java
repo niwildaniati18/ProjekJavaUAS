@@ -13,6 +13,10 @@ public class PinjambukuInputFrame extends JFrame{
     private JComboBox bukuComboBox;
     private JButton simpanButton;
     private JButton batalButton;
+    private JRadioButton romanceRadioButton;
+    private JRadioButton comedyRadioButton;
+
+    private ButtonGroup jenisBukuButtonGroup;
 
     private int id;
 
@@ -41,6 +45,20 @@ public class PinjambukuInputFrame extends JFrame{
                 bukuComboBox.requestFocus();
                 return;
             }
+
+            String jenisBuku = "";
+            if (romanceRadioButton.isSelected()){
+                jenisBuku = "Romance";
+            } else if (comedyRadioButton.isSelected()){
+                jenisBuku = "Comedy";
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "Pilih Jenis Buku",
+                        "Validasi Data Kosong",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             Connection c = Koneksi.getConnection();
             PreparedStatement ps;
             try {
@@ -54,19 +72,22 @@ public class PinjambukuInputFrame extends JFrame{
                         JOptionPane.showMessageDialog(null,
                                 "Data yang anda masukkan suda ada");
                     } else {
-                        String insertSQL = "INSERT INTO pinjambuku (id, nama, buku_id) VALUES (NULL, ?, ?)";
+                        String insertSQL = "INSERT INTO pinjambuku (id, nama, buku_id, jenis_buku) VALUES " +
+                                "(NULL, ?, ?, ?)";
                         ps = c.prepareStatement(insertSQL);
                         ps.setString(1, nama);
                         ps.setInt(2, bukuId);
+                        ps.setString(3, jenisBuku);
                         ps.executeUpdate();
                         dispose();
                     }
                 } else {
-                    String updateSQL = "UPDATE pinjambuku SET nama = ?, buku_id = ? WHERE id = ?";
+                    String updateSQL = "UPDATE pinjambuku SET nama = ?, buku_id = ?, jenis_buku = ? WHERE id = ?";
                     ps = c.prepareStatement(updateSQL);
                     ps.setString(1, nama);
                     ps.setInt(2, bukuId);
-                    ps.setInt(3, id);
+                    ps.setString(3, jenisBuku);
+                    ps.setInt(4, id);
                     ps.executeUpdate();
                     dispose();
                 }
@@ -108,6 +129,14 @@ public class PinjambukuInputFrame extends JFrame{
                         break;
                     }
                 }
+                String jenisBuku = rs.getString("jenis_buku");
+                if (jenisBuku != null) {
+                    if (jenisBuku.equals("Romance")) {
+                        romanceRadioButton.setSelected(true);
+                    } else if (jenisBuku.equals("Comedy")) {
+                        comedyRadioButton.setSelected(true);
+                    }
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -129,5 +158,8 @@ public class PinjambukuInputFrame extends JFrame{
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+        jenisBukuButtonGroup = new ButtonGroup();
+        jenisBukuButtonGroup.add(romanceRadioButton);
+        jenisBukuButtonGroup.add(comedyRadioButton);
     }
 }

@@ -44,10 +44,12 @@ public class PinjambukuViewFrame extends JFrame{
                 ResultSet rs = ps.executeQuery();
                 DefaultTableModel dtm = (DefaultTableModel) viewTable.getModel();
                 dtm.setRowCount(0);
-                Object[] row = new Object[2];
+                Object[] row = new Object[4];
                 while (rs.next()) {
                     row[0] = rs.getInt("id");
                     row[1] = rs.getString("nama");
+                    row[2] = rs.getString("buku_id");
+                    row[3] = rs.getString("jenis_buku");
                     dtm.addRow(row);
                 }
             } catch (SQLException ex) {
@@ -158,16 +160,17 @@ public class PinjambukuViewFrame extends JFrame{
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery(selectSQL);
 
-            String header[] = {"Id","Nama Peminjam Buku", "buku"};
+            String header[] = {"Id","Nama Peminjam Buku", "Buku", "Jenis Buku"};
             DefaultTableModel dtm = new DefaultTableModel(header, 0);
             viewTable.setModel(dtm);
 
             viewTable.getColumnModel().getColumn(0).setMaxWidth(32);
-            Object[] row = new Object[3];
+            Object[] row = new Object[4];
             while (rs.next()) {
                 row[0] = rs.getInt("id");
                 row[1] = rs.getString("nama");
                 row[2] = rs.getString("buku_id");
+                row[3] = rs.getString("jenis_buku");
                 dtm.addRow(row);
             }
         } catch (SQLException e) {

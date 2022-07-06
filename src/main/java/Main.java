@@ -5,8 +5,8 @@ import frame.PinjambukuViewFrame;
 public class Main {
     public static void main(String[] args) {
 //        Koneksi.getConnection();
-//        BukuViewFrame viewFrame = new BukuViewFrame();
-        PinjambukuViewFrame viewFrame = new PinjambukuViewFrame();
+        BukuViewFrame viewFrame = new BukuViewFrame();
+//        PinjambukuViewFrame viewFrame = new PinjambukuViewFrame();
         viewFrame.setVisible(true);
     }
 }

@@ -29,6 +29,7 @@ public class PinjambukuInputFrame extends JFrame{
     }
 
     public PinjambukuInputFrame(){
+
         simpanButton.addActionListener(e -> {
             String nama = namaTextField.getText();
             if (nama.equals("")) {

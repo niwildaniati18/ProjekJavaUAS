@@ -1,6 +1,9 @@
 package frame;
 
+import helpers.JasperDataSourceBuilder;
 import helpers.Koneksi;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.view.JasperViewer;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

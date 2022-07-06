@@ -1,6 +1,9 @@
 package frame;
 
+import helpers.JasperDataSourceBuilder;
 import helpers.Koneksi;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.view.JasperViewer;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -25,6 +28,39 @@ public class BukuViewFrame extends JFrame{
     private JScrollPane viewScrollPane;
 
     public BukuViewFrame(){
+        cetakButton.addActionListener(e -> {
+            Connection c = Koneksi.getConnection();
+            String selectSQL = "SELECT * FROM buku";
+            Object[][] row;
+            try {
+                Statement s = c.createStatement(
+                        ResultSet.TYPE_SCROLL_SENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                ResultSet rs = s.executeQuery(selectSQL);
+                rs.last();
+                int jumlah = rs.getRow();
+                row = new Object[jumlah][2];
+                int i = 0;
+                rs.beforeFirst();
+                while (rs.next()){
+                    row[i][0] = rs.getInt("id");
+                    row[i][1] = rs.getString("nama");
+                    i++;
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            try {
+                JasperReport jasperReport = JasperCompileManager.compileReport("C:\\Users\\NIW\\" +
+                        "IdeaProjects\\ProjekJavaUAS\\src\\main\\resources\\buku_report.jrxml");
+                JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,null,
+                        new JasperDataSourceBuilder(row));
+                JasperViewer viewer = new JasperViewer(jasperPrint, false);
+                viewer.setVisible(true);
+            } catch (JRException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         cariButton.addActionListener(e -> {
             if (cariTextField.getText().equals("")) {
                 JOptionPane.showMessageDialog(null,
